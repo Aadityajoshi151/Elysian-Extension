@@ -8,3 +8,7 @@ chrome.bookmarks.onChanged.addListener(showLogs);
 chrome.bookmarks.onMoved.addListener(showLogs);
 chrome.bookmarks.onRemoved.addListener(showLogs);
 //TODO Check importBegan and importEnded are required or not
+
+chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
+    console.log(bookmarkTreeNodes[0].children[0].children);
+  });
