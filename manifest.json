@@ -1,0 +1,13 @@
+{
+    "manifest_version": 3,
+    "name": "Elysian",
+    "description": "Smart bookmark manager",
+    "version": "1.0",
+    "permissions": ["bookmarks","notifications"],
+    "action": {
+        "default_popup": "src/index.html"
+    },
+    "background": {
+        "service_worker": "src/background/background.js"
+      }
+}
