@@ -1,12 +1,23 @@
-function showLogs(id, info){
-    console.log(id);
-    console.log(info);
-}
+chrome.bookmarks.onCreated.addListener(function(id, info) {
+    console.log(id)
+    console.log(info)
+  });
 
-chrome.bookmarks.onCreated.addListener(showLogs);
-chrome.bookmarks.onChanged.addListener(showLogs);
-chrome.bookmarks.onMoved.addListener(showLogs);
-chrome.bookmarks.onRemoved.addListener(showLogs);
+chrome.bookmarks.onChanged.addListener(function(id, info) {
+    console.log(id)
+    console.log(info)
+  });
+
+chrome.bookmarks.onMoved.addListener(function(id, info) {
+    console.log(id)
+    console.log(info)
+  });
+
+chrome.bookmarks.onRemoved.addListener(function(id, info) {
+    console.log(id)
+    console.log(info)
+  });
+
 //TODO Check importBegan and importEnded are required or not
 
 chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
