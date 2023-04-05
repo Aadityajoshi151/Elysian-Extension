@@ -3,10 +3,13 @@
     "name": "Elysian",
     "description": "Smart bookmark manager",
     "version": "1.0",
-    "permissions": ["bookmarks","notifications"],
+    "permissions": ["bookmarks","notifications","webRequest"],
     "action": {
         "default_popup": "src/index.html"
     },
+    "host_permissions": [
+        "<all_urls>"
+    ],
     "background": {
         "service_worker": "src/background/background.js"
       }
