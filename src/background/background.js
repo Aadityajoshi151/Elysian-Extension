@@ -1,17 +1,44 @@
-chrome.bookmarks.onCreated.addListener(function(id, info) {
-    console.log(info);
-    fetch("http://localhost:3000/add_bookmark", {
+function showNotification(title, message){
+  chrome.notifications.create({
+  type: 'basic',
+  iconUrl: 'snowflake.png',
+  title: title,
+  message: message
+}, function() {});
+}
+
+// function makePostRequest(){
+
+// }
+
+chrome.bookmarks.onCreated.addListener(async function(id, info) {
+    response = await fetch("http://localhost:3000/add_bookmark", {
     method: "POST",
     body: JSON.stringify(info),
     headers: {
       "Content-type": "application/json; charset=UTF-8"
     }
    });
+   console.log(info)
+   if(response.status == 201){
+    showNotification(info.title, "Bookmark added to Elysian")
+   }
+   
   });
 
-chrome.bookmarks.onChanged.addListener(function(id, info) {
-    console.log(id)
-    console.log(info)
+chrome.bookmarks.onChanged.addListener(async function(id, info) {
+  info.id = id //Adding id in the object that will be sent to the server
+  response = await fetch("http://localhost:3000/update_bookmark", {
+    method: "POST",
+    body: JSON.stringify(info),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    }
+   });
+   console.log("here")
+   if(response.status == 201){
+    showNotification(info.title, "Bookmark updated in Elysian")
+   }
   });
 
 chrome.bookmarks.onMoved.addListener(function(id, info) {
