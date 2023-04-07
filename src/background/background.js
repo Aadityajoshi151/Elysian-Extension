@@ -38,9 +38,18 @@ chrome.bookmarks.onChanged.addListener(async function(id, info) {
    }
   });
 
-chrome.bookmarks.onMoved.addListener(function(id, info) {
-    console.log(id)
-    console.log(info)
+chrome.bookmarks.onMoved.addListener(async function(id, info) {
+    info.id = id //Adding id in the object that will be sent to the server
+    response = await fetch("http://localhost:3000/update_bookmark", {
+    method: "POST",
+    body: JSON.stringify(info),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    }
+   });
+   if(response.status == 201){
+    showNotification("Reordered", "Bookmark re-ordered in Elysian")
+   }
   });
 
 chrome.bookmarks.onRemoved.addListener(async function(id, info) {
