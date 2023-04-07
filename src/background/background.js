@@ -1,3 +1,5 @@
+const BASE_URL="http://localhost:3000/";
+
 function showNotification(title, message){
   chrome.notifications.create({
   type: 'basic',
@@ -7,74 +9,44 @@ function showNotification(title, message){
 }, function() {});
 }
 
+async function sendPostRequest(info, endpoint, response_code, notification_title, notification_message) {
+  try {
+    const response = await fetch(BASE_URL.concat(endpoint), {
+      method: "POST",
+      body: JSON.stringify(info),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8"
+      }
+    });
+    if (response.status == response_code) {
+      showNotification(notification_title, notification_message);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
 
 chrome.bookmarks.onCreated.addListener(async function(id, info) {
-    response = await fetch("http://localhost:3000/add_bookmark", {
-    method: "POST",
-    body: JSON.stringify(info),
-    headers: {
-      "Content-type": "application/json; charset=UTF-8"
-    }
-   });
-   console.log(info)
-   if(response.status == 201){
-    showNotification(info.title, "Bookmark added to Elysian")
-   }
-   
+   await sendPostRequest(info, "add_bookmark", 201, info.title, "Bookmark added to Elysian")
   });
 
 chrome.bookmarks.onChanged.addListener(async function(id, info) {
-  info.id = id //Adding id in the object that will be sent to the server
-  response = await fetch("http://localhost:3000/update_bookmark", {
-    method: "POST",
-    body: JSON.stringify(info),
-    headers: {
-      "Content-type": "application/json; charset=UTF-8"
-    }
-   });
-   console.log("here")
-   if(response.status == 201){
-    showNotification(info.title, "Bookmark updated in Elysian")
-   }
+   info.id = id //Adding id in the object that will be sent to the server
+   await sendPostRequest(info, "update_bookmark", 200, info.title, "Bookmark updated in Elysian")
   });
 
 chrome.bookmarks.onMoved.addListener(async function(id, info) {
-    info.id = id //Adding id in the object that will be sent to the server
-    response = await fetch("http://localhost:3000/update_bookmark", {
-    method: "POST",
-    body: JSON.stringify(info),
-    headers: {
-      "Content-type": "application/json; charset=UTF-8"
-    }
-   });
-   if(response.status == 201){
-    showNotification("Reordered", "Bookmark re-ordered in Elysian")
-   }
+   info.id = id //Adding id in the object that will be sent to the server
+   await sendPostRequest(info, "update_bookmark", 200, "Reordered", "Bookmark re-ordered in Elysian")
   });
 
 chrome.bookmarks.onRemoved.addListener(async function(id, info) {
-  response = await fetch("http://localhost:3000/delete_bookmark", {
-    method: "POST",
-    body: JSON.stringify({id}),
-    headers: {
-      "Content-type": "application/json; charset=UTF-8"
-    }
-   });
-   if(response.status == 201){
-    showNotification("Deleted", "Bookmark removed from Elysian")
-   }
+   await sendPostRequest({id}, "delete_bookmark", 410, "Deleted", "Bookmark removed from Elysian")
   });
 
-//TODO Check importBegan and importEnded are required or not
+//TODO Check importBegan, importEnded and onReordered are required or not
 
 chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
-    bookmarks = bookmarkTreeNodes[0].children[0].children;
-    console.log(bookmarks);
-    fetch("http://localhost:3000/import_bookmarks", {
-    method: "POST",
-    body: JSON.stringify({"bookmarks":bookmarks}),
-    headers: {
-      "Content-type": "application/json; charset=UTF-8"
-    }
-   });
+   bookmarks = bookmarkTreeNodes[0].children[0].children;
+   sendPostRequest({"bookmarks":bookmarks}, "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysain")
 });
