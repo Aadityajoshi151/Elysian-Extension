@@ -7,9 +7,6 @@ function showNotification(title, message){
 }, function() {});
 }
 
-// function makePostRequest(){
-
-// }
 
 chrome.bookmarks.onCreated.addListener(async function(id, info) {
     response = await fetch("http://localhost:3000/add_bookmark", {
