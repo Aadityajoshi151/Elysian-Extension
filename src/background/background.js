@@ -43,9 +43,17 @@ chrome.bookmarks.onMoved.addListener(function(id, info) {
     console.log(info)
   });
 
-chrome.bookmarks.onRemoved.addListener(function(id, info) {
-    console.log(id)
-    console.log(info)
+chrome.bookmarks.onRemoved.addListener(async function(id, info) {
+  response = await fetch("http://localhost:3000/delete_bookmark", {
+    method: "POST",
+    body: JSON.stringify({id}),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    }
+   });
+   if(response.status == 201){
+    showNotification("Deleted", "Bookmark removed from Elysian")
+   }
   });
 
 //TODO Check importBegan and importEnded are required or not
