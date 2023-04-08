@@ -1,4 +1,7 @@
 const BASE_URL="http://localhost:3000/";
+const ELYSIAN_API_KEY="Rmu2jhNTbdSEA5Oq0nQcc0A198qGOthyP7p"
+//This is just a random string for testing.
+//TODO: remove this and use chrome's local storage to retrieve the value
 
 function showNotification(title, message){
   chrome.notifications.create({
@@ -15,11 +18,15 @@ async function sendPostRequest(info, endpoint, response_code, notification_title
       method: "POST",
       body: JSON.stringify(info),
       headers: {
+        "Authorization": ELYSIAN_API_KEY,
         "Content-type": "application/json; charset=UTF-8"
       }
     });
     if (response.status == response_code) {
       showNotification(notification_title, notification_message);
+    }
+    else if (response.status == 401){
+      showNotification("Authentication Failed", "Please check the API key added in Elysian extension");
     }
   } catch (error) {
     console.error('Error:', error);
