@@ -53,7 +53,11 @@ chrome.bookmarks.onRemoved.addListener(async function(id, info) {
 
 //TODO Check importBegan, importEnded and onReordered are required or not
 
-chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
-   bookmarks = bookmarkTreeNodes[0].children[0].children;
-   sendPostRequest({"bookmarks":bookmarks}, "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysain")
-});
+chrome.runtime.onMessage.addListener(function(message) {
+  if (message.content === "export_to_elysian"){
+    chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
+      bookmarks = bookmarkTreeNodes[0].children[0].children;
+      sendPostRequest({"bookmarks":bookmarks}, "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysain")
+   });
+  }
+})
