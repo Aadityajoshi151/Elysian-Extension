@@ -3,6 +3,12 @@ const ELYSIAN_API_KEY="Rmu2jhNTbdSEA5Oq0nQcc0A198qGOthyP7p"
 //This is just a random string for testing.
 //TODO: remove this and use chrome's local storage to retrieve the value
 
+chrome.runtime.onInstalled.addListener(function(details) {
+  if (details.reason === "install") {
+    chrome.tabs.create({ url: "add_credentials.html" });
+  }
+});
+
 function showNotification(title, message){
   chrome.notifications.create({
   type: 'basic',

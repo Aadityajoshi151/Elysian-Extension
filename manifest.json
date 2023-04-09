@@ -3,7 +3,7 @@
     "name": "Elysian",
     "description": "Smart bookmark manager",
     "version": "1.0",
-    "permissions": ["bookmarks","notifications","webRequest"],
+    "permissions": ["bookmarks","notifications","webRequest","tabs","storage"],
     "action": {
         "default_popup": "src/index.html"
     },
