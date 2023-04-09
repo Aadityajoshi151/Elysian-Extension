@@ -32,10 +32,10 @@ async function sendPostRequest(info, endpoint, response_code, notification_title
       showNotification(notification_title, notification_message);
     }
     else if (response.status == 401){
-      showNotification("Authentication Failed", "Please check the API key added in Elysian extension");
+      showNotification("Authentication failed", "Please check the API key added in Elysian extension");
     }
   } catch (error) {
-    console.error('Error:', error);
+    showNotification("Request failed", "Unable to reach the Elysian server");
   }
 }
 
@@ -63,7 +63,7 @@ chrome.runtime.onMessage.addListener(function(message) {
   if (message.content === "export_to_elysian"){
     chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
       bookmarks = bookmarkTreeNodes[0].children[0].children;
-      sendPostRequest({"bookmarks":bookmarks}, "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysain")
+      sendPostRequest({"bookmarks":bookmarks}, "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysian")
    });
   }
 })
