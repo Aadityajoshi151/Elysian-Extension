@@ -5,3 +5,8 @@ document.getElementById("export_to_server").addEventListener("click", function()
 document.getElementById("add_credentials").addEventListener("click", function(){
     chrome.tabs.create({ url: "add_credentials.html" });
 })
+
+document.getElementById("github_repo").addEventListener("click", function(){
+    chrome.tabs.create({ url: "https://github.com/Aadityajoshi151?tab=repositories" });
+})
+

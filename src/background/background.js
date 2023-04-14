@@ -12,7 +12,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
 function showNotification(title, message){
   chrome.notifications.create({
   type: 'basic',
-  iconUrl: 'snowflake.png',
+  iconUrl: 'Elysian_Logo.png',
   title: title,
   message: message
 }, function() {});
