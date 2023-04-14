@@ -63,7 +63,68 @@ chrome.runtime.onMessage.addListener(function(message) {
   if (message.content === "export_to_elysian"){
     chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
       bookmarks = bookmarkTreeNodes[0].children[0].children;
+      console.log(bookmarks)
       sendPostRequest({"bookmarks":bookmarks}, "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysian")
    });
   }
+  if (message.content === "import_from_elysian"){
+    fetch("http://localhost:3000/bookmarks", {
+      headers: {
+        'Authorization': ELYSIAN_API_KEY
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      all_bookmarks = data
+      data.forEach(item => {  
+        if (item.parentId === "1"){
+            if (item.url) {
+              // create bookmark with URL
+              console.log("Creating RAW bookmark "+item.title)
+              chrome.bookmarks.create({
+                parentId: item.parentId,
+                title: item.title,
+                url: item.url
+              });
+            } else {
+              // create folder
+              console.log("Creating folder "+item.title)
+              chrome.bookmarks.create({
+                parentId: item.parentId,
+                title: item.title
+              });
+            }
+        }
+      
+      });
+      console.log("--------------------------------------------------------")
+      data.forEach(item => {     
+        if (item.parentId !== "1"){          
+          let obj = all_bookmarks.find(o => o.id === item.parentId)
+          chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
+            bookmarks = bookmarkTreeNodes[0].children[0].children;
+          //console.log(bookmarks)
+          bookmarks.forEach(function(bookmark) {
+          if (bookmark.title === obj.title){
+            console.log("SAme title found")
+            console.log(bookmark)
+            console.log("Creating Nested "+item.title+" which is a child of "+bookmark.title+" which as an id of "+bookmark.id)
+            chrome.bookmarks.create({
+              parentId: bookmark.id,
+              title: item.title,
+              url: item.url
+            });
+          }
+  });
+});
+          
+        }
+      });
+
+    })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }
+  
 })
