@@ -1,3 +1,4 @@
+
 document.getElementById("export_to_server").addEventListener("click", function(){
     chrome.runtime.sendMessage({content: "export_to_elysian"})
 })
@@ -13,3 +14,8 @@ document.getElementById("github_repo").addEventListener("click", function(){
 document.getElementById("import_from_server").addEventListener("click", function(){
     chrome.runtime.sendMessage({content: "import_from_elysian"})
 })
+
+document.getElementById("test").addEventListener("click", function(){
+    chrome.runtime.sendMessage({content: "import_from_elysian"})
+})
+
