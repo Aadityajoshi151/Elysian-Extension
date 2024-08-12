@@ -1,7 +1,4 @@
 async function getServerDetails() {
-  console.log("inside server details function")
-  var BASE_URL="test"
-  var ELYSIAN_API_KEY="test"
   chrome.storage.sync.get(['server_url', 'elysian_api_key'], function(result) {
     console.log("inside chrome storage sync")
     console.log('url: ' + result.server_url);
@@ -40,19 +37,9 @@ function showNotification(title, message){
 
 async function sendPostRequest(info, endpoint, response_code, notification_title, notification_message) {
   try {
-    console.log(info)
-    console.log("Inside")
-    var server_details = []
     var server_details = await getServerDetails();
     console.log("server details")
     console.log(server_details)
-    BASE_URL = "http://127.0.0.1:3000/";
-    ELYSIAN_API_KEY = "Rmu2jhNTbdSEA5Oq0nQcc0A198qGOthyP7p"
-    console.log("URL: "+ BASE_URL);
-    console.log("KEY: "+ELYSIAN_API_KEY)
-    console.log(info)
-    console.log("Aaditya Joshi")
-    console.log(BASE_URL.concat(endpoint))
     const response = await fetch(BASE_URL.concat(endpoint), {
       method: "POST",
       body: JSON.stringify(info),
@@ -73,8 +60,6 @@ async function sendPostRequest(info, endpoint, response_code, notification_title
 }
 
 async function sendGETRequest(endpoint){
-  BASE_URL = "http://127.0.0.1:3000/";
-  ELYSIAN_API_KEY = "Rmu2jhNTbdSEA5Oq0nQcc0A198qGOthyP7p"
   const response = await fetch(BASE_URL.concat(endpoint), {
     method: "GET",
     headers: {
@@ -85,31 +70,6 @@ async function sendGETRequest(endpoint){
   });
   return response.json()
 }
-
-chrome.bookmarks.onCreated.addListener(async function(id, info) {
-   await sendPostRequest(info, "add_bookmark", 201, info, "Bookmark added to Elysian")
-   console.log("MY anme asfhkjsdfhsdfhkjashdfkjahsfdkjhakjfhasdfkjh")
-   console.log('id')
-   console.log(id)
-   console.log('info')
-   console.log(info)
-  });
-
-chrome.bookmarks.onChanged.addListener(async function(id, info) {
-   info.id = id //Adding id in the object that will be sent to the server
-   await sendPostRequest(info, "update_bookmark", 200, info.title, "Bookmark updated in Elysian")
-  });
-
-chrome.bookmarks.onMoved.addListener(async function(id, info) {
-   info.id = id //Adding id in the object that will be sent to the server
-   await sendPostRequest(info, "update_bookmark", 200, "Reordered", "Bookmark re-ordered in Elysian")
-  });
-
-chrome.bookmarks.onRemoved.addListener(async function(id, info) {
-   await sendPostRequest({id}, "delete_bookmark", 410, "Deleted", "Bookmark removed from Elysian")
-  });
-
-//TODO Check importBegan, importEnded and onReordered are required or not
 
 chrome.runtime.onMessage.addListener(async function(message) {
   if (message.content === "export_to_elysian"){
