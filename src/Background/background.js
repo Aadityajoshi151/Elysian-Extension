@@ -22,7 +22,7 @@ async function getServerDetails() {
 
 chrome.runtime.onInstalled.addListener(function(details) {
   if (details.reason === "install") {
-    chrome.tabs.create({ url: "add_credentials.html" });
+    chrome.tabs.create({ url: "src/Foreground/Server_Details/add_server_details.html" });
   }
 });
 

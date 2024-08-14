@@ -4,7 +4,7 @@ document.getElementById("export_to_server").addEventListener("click", function()
 })
 
 document.getElementById("add_credentials").addEventListener("click", function(){
-    chrome.tabs.create({ url: "add_credentials.html" });
+    chrome.tabs.create({ url: "../src/Foreground/Server_Details/add_server_details.html" });
 })
 
 document.getElementById("github_repo").addEventListener("click", function(){

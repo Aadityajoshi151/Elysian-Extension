@@ -9,7 +9,7 @@ chrome.storage.sync.get(['server_url', 'elysian_api_key'], function(result) {
         api_key_input.value = result.elysian_api_key
     }
   });
-document.getElementById("add_credentials").addEventListener("click", function(){
+document.getElementById("add_details").addEventListener("click", function(){
     server_url = url_input.value
     elysian_api_key = api_key_input.value
     //TODO: Add a POST request which checks authenticity of credentials before saving
