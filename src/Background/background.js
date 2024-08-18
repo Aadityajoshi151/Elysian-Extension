@@ -51,6 +51,14 @@ async function sendGETRequest(endpoint){
   return response.json()
 }
 
+async function sendBookmarkToElysian(id, info) {
+  console.log("inside add bookmark")
+  console.log(info)
+   await sendPostRequest(info, "add_bookmark", 201, info, "Bookmark added to Elysian")
+}
+
+chrome.bookmarks.onCreated.addListener(sendBookmarkToElysian);
+
 chrome.runtime.onMessage.addListener(async function(message) {
   if (message.content === "export_to_elysian"){
     chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
@@ -59,29 +67,42 @@ chrome.runtime.onMessage.addListener(async function(message) {
    });
   }
   if (message.content === "import_from_elysian"){
+    console.log("Removing add listener")
+    chrome.bookmarks.onCreated.removeListener(sendBookmarkToElysian);
     response = await sendGETRequest("import_from_elysian")
     create_bookmarks(response)
+    
     function create_bookmarks(bookmarksData) {
       // Start creating bookmarks in the Chrome browser
-      createBookmarksHierarchy(bookmarksData, null);
+      
+      createBookmarksHierarchy(bookmarksData, null).then(() => {
+        // Reattach the event listener after all bookmarks have been created
+        console.log("adding add listener back")
+        chrome.bookmarks.onCreated.addListener(sendBookmarkToElysian);
+    });;
   }
-  
-  // Recursively create bookmarks in Chrome based on the hierarchy
+
   function createBookmarksHierarchy(bookmarks, parentId) {
-      bookmarks.forEach(bookmark => {
-          const newBookmark = {
-              parentId: parentId || '1', // '1' is the root "Bookmarks Bar" ID
-              title: bookmark.title || "Untitled",
-              url: bookmark.url || null
-          }; 
-          chrome.bookmarks.create(newBookmark, (createdBookmark) => {
-              if (bookmark.children && bookmark.children.length > 0) {
-                  createBookmarksHierarchy(bookmark.children, createdBookmark.id);
-              }
-          });
-      });
-  }
-    
+    return Promise.all(bookmarks.map(bookmark => {
+        return new Promise((resolve) => {
+            const newBookmark = {
+                parentId: parentId || '1', // '1' is the root "Bookmarks Bar" ID
+                title: bookmark.title || "Untitled",
+                url: bookmark.url || null
+            };
+
+            chrome.bookmarks.create(newBookmark, (createdBookmark) => {
+                if (bookmark.children && bookmark.children.length > 0) {
+                    // Recursively create children bookmarks
+                    createBookmarksHierarchy(bookmark.children, createdBookmark.id).then(resolve);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    }));
+}
+
   }
 })
 
