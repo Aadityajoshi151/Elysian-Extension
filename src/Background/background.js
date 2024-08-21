@@ -37,6 +37,7 @@ async function sendPostRequest(info, endpoint, response_code, notification_title
   }
 }
 
+
 async function sendGETRequest(endpoint){
   BASE_URL='http://localhost:6161/api/'
   ELYSIAN_API_KEY='jo'
@@ -57,7 +58,27 @@ async function sendBookmarkToElysian(id, info) {
    await sendPostRequest(info, "add_bookmark", 201, info, "Bookmark added to Elysian")
 }
 
+async function sendDeleteBookmarkFromElysian(id, info) {
+  await sendDeleteRequest(id, "delete_bookmark")
+}
+
 chrome.bookmarks.onCreated.addListener(sendBookmarkToElysian);
+
+chrome.bookmarks.onRemoved.addListener(async function(id, info){
+  console.log("inside remove function")
+  BASE_URL='http://localhost:6161/api/delete_bookmark'
+  ELYSIAN_API_KEY='jo'
+  const response = await fetch(BASE_URL, {
+    method: "DELETE",
+    headers: {
+      "Authorization": ELYSIAN_API_KEY,
+      "Content-type": "application/json"
+    },
+    body: JSON.stringify({ "id": id })
+  });
+  showNotification("Bookmark Deleted", "The bookmark is sucessfully deleted from Elysian");
+  return response.json()
+});
 
 chrome.runtime.onMessage.addListener(async function(message) {
   if (message.content === "export_to_elysian"){
