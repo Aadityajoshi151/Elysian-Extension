@@ -80,6 +80,21 @@ chrome.bookmarks.onRemoved.addListener(async function(id, info){
   return response.json()
 });
 
+chrome.bookmarks.onChanged.addListener(async function(id, info){
+  console.log("inside update function")
+    BASE_URL='http://localhost:6161/api/update_bookmark'
+    ELYSIAN_API_KEY='jo'
+    const response = await fetch(BASE_URL, {
+      method: "PATCH",
+      headers: {
+        "Authorization": ELYSIAN_API_KEY,
+        "Content-type": "application/json"
+      },
+      body: JSON.stringify({ "id": id, "title": info.title, "url": info.url})
+    });
+    showNotification("Bookmark Updated", "The bookmark is sucessfully updated in Elysian");
+})
+
 chrome.runtime.onMessage.addListener(async function(message) {
   if (message.content === "export_to_elysian"){
     chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
