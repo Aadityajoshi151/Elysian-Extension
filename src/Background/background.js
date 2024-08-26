@@ -95,6 +95,17 @@ chrome.bookmarks.onChanged.addListener(async function(id, info){
     showNotification("Bookmark Updated", "The bookmark is sucessfully updated in Elysian");
 })
 
+
+chrome.bookmarks.onMoved.addListener(async function(id, info){
+    console.log("inside onmoved function")
+    console.log(id)
+    console.log(info)
+    chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
+      bookmarks = bookmarkTreeNodes[0].children[0].children;
+      sendPostRequest(bookmarks, "export_to_elysian", 200, "Bookmark Moved", "Sucessfully moved the bookmark in Elysian")
+    })
+})
+
 chrome.runtime.onMessage.addListener(async function(message) {
   if (message.content === "export_to_elysian"){
     chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
