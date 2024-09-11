@@ -29,12 +29,11 @@ function showNotification(title, message){
 async function sendPostRequest(info, endpoint, response_code, notification_title, notification_message) {
   try {
     const BASE_URL = await getFromLocalStorage('server_url')
-    const ELYSIAN_API_KEY = await getFromLocalStorage('elysian_api_key')
     const response = await fetch(BASE_URL.concat('/api/'+endpoint), {
       method: "POST",
       body: JSON.stringify(info),
       headers: {
-        "Authorization": ELYSIAN_API_KEY,
+        "Authorization": await getFromLocalStorage('elysian_api_key'),
         "Content-type": "application/json"
       }
     });
@@ -45,18 +44,17 @@ async function sendPostRequest(info, endpoint, response_code, notification_title
       showNotification("Authentication failed", "Please check the API key added in Elysian extension");
     }
   } catch (error) {
-    showNotification("Request failed", "Unable to reach the Elysian server");
+    showNotification("Unable to reach the Elysian server", error.message);
   }
 }
 
 
 async function sendGETRequest(endpoint){
-  BASE_URL='http://localhost:6161/api/'
-  ELYSIAN_API_KEY='jo'
-  const response = await fetch(BASE_URL.concat(endpoint), {
+  const BASE_URL = await getFromLocalStorage('server_url')
+  const response = await fetch(BASE_URL.concat("/api/"+endpoint), {
     method: "GET",
     headers: {
-      "Authorization": ELYSIAN_API_KEY,
+      "Authorization": await getFromLocalStorage('elysian_api_key'),
       "Content-type": "application/json"
     }
 
@@ -65,8 +63,6 @@ async function sendGETRequest(endpoint){
 }
 
 async function sendBookmarkToElysian(id, info) {
-  console.log("inside add bookmark")
-  console.log(info)
    await sendPostRequest(info, "add_bookmark", 201, info, "Bookmark added to Elysian")
 }
 
@@ -77,13 +73,11 @@ async function sendDeleteBookmarkFromElysian(id, info) {
 chrome.bookmarks.onCreated.addListener(sendBookmarkToElysian);
 
 chrome.bookmarks.onRemoved.addListener(async function(id, info){
-  console.log("inside remove function")
-  BASE_URL='http://localhost:6161/api/delete_bookmark'
-  ELYSIAN_API_KEY='jo'
-  const response = await fetch(BASE_URL, {
+  const BASE_URL = await getFromLocalStorage('server_url')
+  const response = await fetch(BASE_URL.concat("/api/delete_bookmark"), {
     method: "DELETE",
     headers: {
-      "Authorization": ELYSIAN_API_KEY,
+      "Authorization": await getFromLocalStorage('elysian_api_key'),
       "Content-type": "application/json"
     },
     body: JSON.stringify({ "id": id })
@@ -93,13 +87,11 @@ chrome.bookmarks.onRemoved.addListener(async function(id, info){
 });
 
 chrome.bookmarks.onChanged.addListener(async function(id, info){
-  console.log("inside update function")
-    BASE_URL='http://localhost:6161/api/update_bookmark'
-    ELYSIAN_API_KEY='jo'
-    const response = await fetch(BASE_URL, {
+    const BASE_URL = await getFromLocalStorage('server_url')
+    const response = await fetch(BASE_URL.concat("/api/update_bookmark"), {
       method: "PATCH",
       headers: {
-        "Authorization": ELYSIAN_API_KEY,
+        "Authorization": await getFromLocalStorage('elysian_api_key'),
         "Content-type": "application/json"
       },
       body: JSON.stringify({ "id": id, "title": info.title, "url": info.url})
@@ -109,9 +101,6 @@ chrome.bookmarks.onChanged.addListener(async function(id, info){
 
 
 chrome.bookmarks.onMoved.addListener(async function(id, info){
-    console.log("inside onmoved function")
-    console.log(id)
-    console.log(info)
     chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
       bookmarks = bookmarkTreeNodes[0].children[0].children;
       sendPostRequest(bookmarks, "export_to_elysian", 200, "Bookmark Moved", "Sucessfully moved the bookmark in Elysian")
