@@ -121,9 +121,7 @@ chrome.bookmarks.onMoved.addListener(async function(id, info){
 chrome.runtime.onMessage.addListener(async function(message) {
   if (message.content === "export_to_elysian"){
       chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
-      console.log("before")
       bookmarks = bookmarkTreeNodes[0].children[0].children;
-      console.log(bookmarks)
       sendPostRequest(bookmarks, "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysian")
    });
   }
