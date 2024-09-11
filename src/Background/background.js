@@ -1,3 +1,15 @@
+function getFromLocalStorage(key) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get([key], function(result) {
+      if (chrome.runtime.lastError) {
+        return reject(chrome.runtime.lastError);
+      }
+      resolve(result[key] || null); // Return null if key not found
+    });
+  });
+}
+
+
 chrome.runtime.onInstalled.addListener(function(details) {
   if (details.reason === "install") {
     chrome.tabs.create({ url: "src/Foreground/Server_Details/add_server_details.html" });
@@ -16,9 +28,9 @@ function showNotification(title, message){
 
 async function sendPostRequest(info, endpoint, response_code, notification_title, notification_message) {
   try {
-    BASE_URL='http://localhost:6161/api/'
-    ELYSIAN_API_KEY='jo'
-    const response = await fetch(BASE_URL.concat(endpoint), {
+    const BASE_URL = await getFromLocalStorage('server_url')
+    const ELYSIAN_API_KEY = await getFromLocalStorage('elysian_api_key')
+    const response = await fetch(BASE_URL.concat('/api/'+endpoint), {
       method: "POST",
       body: JSON.stringify(info),
       headers: {
@@ -108,8 +120,10 @@ chrome.bookmarks.onMoved.addListener(async function(id, info){
 
 chrome.runtime.onMessage.addListener(async function(message) {
   if (message.content === "export_to_elysian"){
-    chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
+      chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
+      console.log("before")
       bookmarks = bookmarkTreeNodes[0].children[0].children;
+      console.log(bookmarks)
       sendPostRequest(bookmarks, "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysian")
    });
   }
