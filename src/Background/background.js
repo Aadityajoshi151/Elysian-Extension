@@ -45,7 +45,7 @@ async function sendPostRequest(info, endpoint, response_code, notification_title
     }
   } catch (error) {
     //TODO change the notification title below
-    showNotification("Unable to reach the Elysian server", error.message);
+    showNotification("Error Occurrerd!", error.message);
   }
 }
 
@@ -74,6 +74,7 @@ async function sendDeleteBookmarkFromElysian(id, info) {
 chrome.bookmarks.onCreated.addListener(sendBookmarkToElysian);
 
 chrome.bookmarks.onRemoved.addListener(async function(id, info){
+  try{
   const BASE_URL = await getFromLocalStorage('server_url')
   const response = await fetch(BASE_URL.concat("/api/delete_bookmark"), {
     method: "DELETE",
@@ -83,8 +84,17 @@ chrome.bookmarks.onRemoved.addListener(async function(id, info){
     },
     body: JSON.stringify({ "id": id })
   });
-  showNotification("Bookmark Deleted", "The bookmark is sucessfully deleted from Elysian");
-  return response.json()
+  if (response.status == 200){
+    showNotification("Bookmark Deleted", "The bookmark is sucessfully deleted from Elysian");
+  }
+  else if (response.status == 401){
+    showNotification("Authentication failed", "Please check the API key added in Elysian extension");
+  }
+}
+catch (error) {
+  //TODO change the notification title below
+  showNotification("Error Occurrerd!", error.message);
+}
 });
 
 chrome.bookmarks.onChanged.addListener(async function(id, info){
