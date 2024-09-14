@@ -44,6 +44,7 @@ async function sendPostRequest(info, endpoint, response_code, notification_title
       showNotification("Authentication failed", "Please check the API key added in Elysian extension");
     }
   } catch (error) {
+    //TODO change the notification title below
     showNotification("Unable to reach the Elysian server", error.message);
   }
 }
@@ -63,7 +64,7 @@ async function sendGETRequest(endpoint){
 }
 
 async function sendBookmarkToElysian(id, info) {
-   await sendPostRequest(info, "add_bookmark", 201, info, "Bookmark added to Elysian")
+   await sendPostRequest(info, "add_bookmark", 201, info.title+'|'+info.url, "Bookmark added to Elysian")
 }
 
 async function sendDeleteBookmarkFromElysian(id, info) {
