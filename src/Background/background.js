@@ -25,6 +25,17 @@ function showNotification(title, message){
 }, function() {});
 }
 
+function getBrowserBookmarks() {
+  return new Promise((resolve, reject) => {
+      chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
+          if (chrome.runtime.lastError) {
+              return reject(chrome.runtime.lastError);
+          }
+          const bookmarks = bookmarkTreeNodes[0].children[0].children;
+          resolve(bookmarks);
+      });
+  });
+}
 
 async function sendPostRequest(info, endpoint, response_code, notification_title, notification_message) {
   try {
@@ -112,10 +123,8 @@ chrome.bookmarks.onChanged.addListener(async function(id, info){
 
 
 chrome.bookmarks.onMoved.addListener(async function(id, info){
-    chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
-      bookmarks = bookmarkTreeNodes[0].children[0].children;
-      sendPostRequest(bookmarks, "export_to_elysian", 200, "Bookmark Moved", "Sucessfully moved the bookmark in Elysian")
-    })
+    bookmarks = await getBrowserBookmarks()
+    sendPostRequest(bookmarks, "export_to_elysian", 200, "Bookmark Moved", "Sucessfully moved the bookmark in Elysian")
 })
 
 chrome.bookmarks.onImportBegan.addListener(async function(){
@@ -124,17 +133,15 @@ chrome.bookmarks.onImportBegan.addListener(async function(){
 
 chrome.bookmarks.onImportEnded.addListener(async function(){
   chrome.bookmarks.onCreated.addListener(sendBookmarkToElysian);
-  // console.log("Exporting")
-  // TODO Call the export function here
-  // console.log("exported")
+  bookmarks = await getBrowserBookmarks()
+  sendPostRequest(bookmarks, "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysian")
 })
 
 chrome.runtime.onMessage.addListener(async function(message) {
   if (message.content === "export_to_elysian"){
-      chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
-      bookmarks = bookmarkTreeNodes[0].children[0].children;
-      sendPostRequest(bookmarks, "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysian")
-   });
+  bookmarks = await getBrowserBookmarks()
+  sendPostRequest(bookmarks, "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysian")
+
   }
   if (message.content === "import_from_elysian"){
     console.log("Removing add listener")
