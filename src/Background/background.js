@@ -118,6 +118,17 @@ chrome.bookmarks.onMoved.addListener(async function(id, info){
     })
 })
 
+chrome.bookmarks.onImportBegan.addListener(async function(){
+  chrome.bookmarks.onCreated.removeListener(sendBookmarkToElysian);
+})
+
+chrome.bookmarks.onImportEnded.addListener(async function(){
+  chrome.bookmarks.onCreated.addListener(sendBookmarkToElysian);
+  // console.log("Exporting")
+  // TODO Call the export function here
+  // console.log("exported")
+})
+
 chrome.runtime.onMessage.addListener(async function(message) {
   if (message.content === "export_to_elysian"){
       chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
