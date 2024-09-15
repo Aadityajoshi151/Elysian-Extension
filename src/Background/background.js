@@ -133,9 +133,8 @@ chrome.bookmarks.onImportBegan.addListener(async function(){
 
 chrome.bookmarks.onImportEnded.addListener(async function(){
   chrome.bookmarks.onCreated.addListener(sendBookmarkToElysian);
-  // console.log("Exporting")
-  // TODO Call the export function here
-  // console.log("exported")
+  bookmarks = await getBrowserBookmarks()
+  sendPostRequest(bookmarks, "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysian")
 })
 
 chrome.runtime.onMessage.addListener(async function(message) {
