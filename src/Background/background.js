@@ -179,8 +179,65 @@ chrome.runtime.onMessage.addListener(async function(message) {
         });
     }));
 }
-
   }
+
+  if (message.content === "check_sync_status"){
+    bb = await getBrowserBookmarks()
+    eb = await sendGETRequest("import_from_elysian")
+    diff = deepEqual(bb, eb)
+    if (diff.length == 0){
+      console.log("100% in sync")
+    }
+    else{
+      console.log(diff)
+      console.log("Use Export To Elysian to Sync")
+    }
+
+    function deepEqual(obj1, obj2, path = '', ignoreKeys = ['dateAdded']) {
+      let differences = [];
+  
+      // If both are objects (including arrays), continue recursion
+      if (typeof obj1 === 'object' && typeof obj2 === 'object' && obj1 !== null && obj2 !== null) {
+          const keys1 = Object.keys(obj1);
+          const keys2 = Object.keys(obj2);
+  
+          // Compare keys in obj1
+          for (let key of keys1) {
+              // Skip comparison for ignored keys
+              if (ignoreKeys.includes(key)) continue;
+  
+              const fullPath = path ? `${path}.${key}` : key;
+              if (!obj2.hasOwnProperty(key)) {
+                  differences.push(`Missing key '${fullPath}' in the second object`);
+              } else {
+                  const result = deepEqual(obj1[key], obj2[key], fullPath, ignoreKeys);
+                  differences = differences.concat(result);
+              }
+          }
+  
+          // Check keys in obj2 that are missing in obj1
+          for (let key of keys2) {
+              // Skip ignored keys
+              if (ignoreKeys.includes(key)) continue;
+  
+              const fullPath = path ? `${path}.${key}` : key;
+              if (!obj1.hasOwnProperty(key)) {
+                  differences.push(`Extra key '${fullPath}' in the second object`);
+              }
+          }
+      } else {
+          // For primitive values, compare and log if different
+          if (obj1 !== obj2) {
+              differences.push(`Value mismatch at '${path}': ${obj1} !== ${obj2}`);
+          }
+      }
+  
+      return differences;
+  }
+  
+  
+  }
+
 })
 
 
