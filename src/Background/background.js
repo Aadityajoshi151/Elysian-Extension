@@ -149,7 +149,7 @@ chrome.runtime.onMessage.addListener(async function(message) {
     response = await sendGETRequest("import_from_elysian")
     create_bookmarks(response)
     
-    function create_bookmarks(bookmarksData) {
+    async function create_bookmarks(bookmarksData) {
       // Start creating bookmarks in the Chrome browser
       
       createBookmarksHierarchy(bookmarksData, null).then(() => {
@@ -157,6 +157,8 @@ chrome.runtime.onMessage.addListener(async function(message) {
         console.log("adding add listener back")
         chrome.bookmarks.onCreated.addListener(sendBookmarkToElysian);
     });;
+    bookmarks = await getBrowserBookmarks()
+    sendPostRequest(bookmarks, "export_to_elysian", 200, "Import successful", "Bookmarks from Elysian are added to this browser")
   }
 
   function createBookmarksHierarchy(bookmarks, parentId) {
