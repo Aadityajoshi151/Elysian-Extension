@@ -2,8 +2,6 @@ url_input = document.getElementById("url_input");
 api_key_input = document.getElementById("api_key_input");
 
 chrome.storage.local.get(['server_url', 'elysian_api_key'], function(result) {
-    //console.log('url: ' + result.server_url);
-    //console.log('apikey: ' + result.elysian_api_key);
     if (typeof(result.server_url) !== "undefined" && typeof(result.elysian_api_key) !== "undefined"){
         url_input.value = result.server_url;
         api_key_input.value = result.elysian_api_key
