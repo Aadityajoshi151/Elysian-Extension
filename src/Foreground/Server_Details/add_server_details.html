@@ -11,18 +11,14 @@
 <body class="text-center">
     <main class="form-signin w-100 m-auto">
       <form>
-        <img class="mb-4" src="../../../assets/Elysian_Logo.png" height="100px" width="100px">
-        <p>Add/Update your server URL and API key</p>
-        <div class="form-floating">
-          <input type="text" id="url_input" class="form-control" placeholder="eg. http://192.168.0.1:3000" required="true">
-          <label for="floatingInput">Server URL</label>
-        </div>
-        <!-- TODO: Add a show button in the password field -->
-        <div class="form-floating">
+        <h3>ELYSIAN</h3>
+        <img class="mb-4" src="../../../assets/Elysian_Logo.png" height="150px" width="150px">
+        <p>Add or update your server URL (without trailing '/') and API key</p>
+          <input type="text" id="url_input" class="form-control" placeholder="eg. http://192.168.29.73:6161" required="true">
+          <br>
           <input type="password" id="api_key_input" class="form-control" placeholder="API Key" required="true">
-          <label for="floatingPassword">API Key</label>
-        </div>
-        <button id="add_details" class="w-100 btn btn-lg btn-primary" type="submit">Add/Update</button>
+         <br>
+        <button id="add_details" class="w-100 btn btn-lg btn-primary" type="submit">Add / Update</button>
       </form>
     </main>
     <script src="add_server_details.js"></script>
