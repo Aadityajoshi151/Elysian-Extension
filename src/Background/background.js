@@ -1,6 +1,6 @@
 function getFromLocalStorage(key) {
   return new Promise((resolve, reject) => {
-    chrome.storage.local.get([key], function(result) {
+    chrome.storage.local.get([key], function (result) {
       if (chrome.runtime.lastError) {
         return reject(chrome.runtime.lastError);
       }
@@ -10,37 +10,37 @@ function getFromLocalStorage(key) {
 }
 
 
-chrome.runtime.onInstalled.addListener(function(details) {
+chrome.runtime.onInstalled.addListener(function (details) {
   if (details.reason === "install") {
     chrome.tabs.create({ url: "src/Foreground/Server_Details/add_server_details.html" });
   }
 });
 
-function showNotification(title, message){
+function showNotification(title, message) {
   chrome.notifications.create({
-  type: 'basic',
-  iconUrl: chrome.runtime.getURL('assets/Elysian_Logo.png'),
-  title: title,
-  message: message
-}, function() {});
+    type: 'basic',
+    iconUrl: chrome.runtime.getURL('assets/Elysian_Logo.png'),
+    title: title,
+    message: message
+  }, function () { });
 }
 
 function getBrowserBookmarks() {
   return new Promise((resolve, reject) => {
-      chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
-          if (chrome.runtime.lastError) {
-              return reject(chrome.runtime.lastError);
-          }
-          const bookmarks = bookmarkTreeNodes[0].children[0].children;
-          resolve(bookmarks);
-      });
+    chrome.bookmarks.getTree(function (bookmarkTreeNodes) {
+      if (chrome.runtime.lastError) {
+        return reject(chrome.runtime.lastError);
+      }
+      const bookmarks = bookmarkTreeNodes[0].children[0].children;
+      resolve(bookmarks);
+    });
   });
 }
 
 async function sendPostRequest(info, endpoint, response_code, notification_title, notification_message) {
   try {
     const BASE_URL = await getFromLocalStorage('server_url')
-    const response = await fetch(BASE_URL.concat('/api/'+endpoint), {
+    const response = await fetch(BASE_URL.concat('/api/' + endpoint), {
       method: "POST",
       body: JSON.stringify(info),
       headers: {
@@ -51,7 +51,7 @@ async function sendPostRequest(info, endpoint, response_code, notification_title
     if (response.status == response_code) {
       showNotification(notification_title, notification_message);
     }
-    else if (response.status == 401){
+    else if (response.status == 401) {
       showNotification("Authentication failed", "Please check the API key added in Elysian extension");
     }
   } catch (error) {
@@ -61,9 +61,9 @@ async function sendPostRequest(info, endpoint, response_code, notification_title
 }
 
 
-async function sendGETRequest(endpoint){
+async function sendGETRequest(endpoint) {
   const BASE_URL = await getFromLocalStorage('server_url')
-  const response = await fetch(BASE_URL.concat("/api/"+endpoint), {
+  const response = await fetch(BASE_URL.concat("/api/" + endpoint), {
     method: "GET",
     headers: {
       "Authorization": await getFromLocalStorage('elysian_api_key'),
@@ -75,7 +75,7 @@ async function sendGETRequest(endpoint){
 }
 
 async function sendBookmarkToElysian(id, info) {
-   await sendPostRequest(info, "add_bookmark", 201, info.title+'|'+info.url, "Bookmark added to Elysian")
+  await sendPostRequest(info, "add_bookmark", 201, info.title + '|' + info.url, "Bookmark added to Elysian")
 }
 
 async function sendDeleteBookmarkFromElysian(id, info) {
@@ -84,101 +84,102 @@ async function sendDeleteBookmarkFromElysian(id, info) {
 
 chrome.bookmarks.onCreated.addListener(sendBookmarkToElysian);
 
-chrome.bookmarks.onRemoved.addListener(async function(id, info){
-  try{
-  const BASE_URL = await getFromLocalStorage('server_url')
-  const response = await fetch(BASE_URL.concat("/api/delete_bookmark"), {
-    method: "DELETE",
-    headers: {
-      "Authorization": await getFromLocalStorage('elysian_api_key'),
-      "Content-type": "application/json"
-    },
-    body: JSON.stringify({ "id": id })
-  });
-  if (response.status == 200){
-    showNotification("Bookmark Deleted", "The bookmark is sucessfully deleted from Elysian");
-  }
-  else if (response.status == 401){
-    showNotification("Authentication failed", "Please check the API key added in Elysian extension");
-  }
-}
-catch (error) {
-  //TODO change the notification title below
-  showNotification("Error Occurrerd!", error.message);
-}
-});
-
-chrome.bookmarks.onChanged.addListener(async function(id, info){
+chrome.bookmarks.onRemoved.addListener(async function (id, info) {
+  try {
     const BASE_URL = await getFromLocalStorage('server_url')
-    const response = await fetch(BASE_URL.concat("/api/update_bookmark"), {
-      method: "PATCH",
+    const response = await fetch(BASE_URL.concat("/api/delete_bookmark"), {
+      method: "DELETE",
       headers: {
         "Authorization": await getFromLocalStorage('elysian_api_key'),
         "Content-type": "application/json"
       },
-      body: JSON.stringify({ "id": id, "title": info.title, "url": info.url})
+      body: JSON.stringify({ "id": id })
     });
-    showNotification("Bookmark Updated", "The bookmark is sucessfully updated in Elysian");
+    if (response.status == 200) {
+      showNotification("Bookmark Deleted", "The bookmark is sucessfully deleted from Elysian");
+    }
+    else if (response.status == 401) {
+      showNotification("Authentication failed", "Please check the API key added in Elysian extension");
+    }
+  }
+  catch (error) {
+    //TODO change the notification title below
+    showNotification("Error Occurrerd!", error.message);
+  }
+});
+
+chrome.bookmarks.onChanged.addListener(async function (id, info) {
+  const BASE_URL = await getFromLocalStorage('server_url')
+  const response = await fetch(BASE_URL.concat("/api/update_bookmark"), {
+    method: "PATCH",
+    headers: {
+      "Authorization": await getFromLocalStorage('elysian_api_key'),
+      "Content-type": "application/json"
+    },
+    body: JSON.stringify({ "id": id, "title": info.title, "url": info.url })
+  });
+  showNotification("Bookmark Updated", "The bookmark is sucessfully updated in Elysian");
 })
 
 
-chrome.bookmarks.onMoved.addListener(async function(id, info){
-    bookmarks = await getBrowserBookmarks()
-    sendPostRequest(bookmarks, "export_to_elysian", 200, "Bookmark Moved", "Sucessfully moved the bookmark in Elysian")
+chrome.bookmarks.onMoved.addListener(async function (id, info) {
+  bookmarks = await getBrowserBookmarks()
+  sendPostRequest(bookmarks, "export_to_elysian", 200, "Bookmark Moved", "Sucessfully moved the bookmark in Elysian")
 })
 
-chrome.bookmarks.onImportBegan.addListener(async function(){
+chrome.bookmarks.onImportBegan.addListener(async function () {
   chrome.bookmarks.onCreated.removeListener(sendBookmarkToElysian);
 })
 
-chrome.bookmarks.onImportEnded.addListener(async function(){
+chrome.bookmarks.onImportEnded.addListener(async function () {
   chrome.bookmarks.onCreated.addListener(sendBookmarkToElysian);
   bookmarks = await getBrowserBookmarks()
   sendPostRequest(bookmarks, "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysian")
 })
 
-chrome.runtime.onMessage.addListener(async function(message) {
-  if (message.content === "export_to_elysian"){
-  bookmarks = await getBrowserBookmarks()
-  sendPostRequest(bookmarks, "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysian")
+chrome.runtime.onMessage.addListener(async function (message) {
+  if (message.content === "export_to_elysian") {
+    bookmarks = await getBrowserBookmarks()
+    sendPostRequest(bookmarks, "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysian")
 
   }
-  if (message.content === "import_from_elysian"){
+  if (message.content === "import_from_elysian") {
     console.log("Removing add listener")
     chrome.bookmarks.onCreated.removeListener(sendBookmarkToElysian);
     response = await sendGETRequest("import_from_elysian")
-    create_bookmarks(response)
-    
+    await create_bookmarks(response)
+    bookmarks = await getBrowserBookmarks()
+    sendPostRequest(bookmarks, "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysian")
+
     async function create_bookmarks(bookmarksData) {
       // Start creating bookmarks in the Chrome browser
-      
-      createBookmarksHierarchy(bookmarksData, null).then(() => {
-        // Reattach the event listener after all bookmarks have been created
-        console.log("adding add listener back")
-        chrome.bookmarks.onCreated.addListener(sendBookmarkToElysian);
-    });;
-  }
+      await createBookmarksHierarchy(bookmarksData, null);
 
-  function createBookmarksHierarchy(bookmarks, parentId) {
-    return Promise.all(bookmarks.map(bookmark => {
+      // Reattach the event listener after all bookmarks have been created
+      console.log("adding add listener back");
+      chrome.bookmarks.onCreated.addListener(sendBookmarkToElysian);
+    }
+
+    function createBookmarksHierarchy(bookmarks, parentId) {
+      return Promise.all(bookmarks.map(bookmark => {
         return new Promise((resolve) => {
-            const newBookmark = {
-                parentId: parentId || '1', // '1' is the root "Bookmarks Bar" ID
-                title: bookmark.title || "Untitled",
-                url: bookmark.url || null
-            };
+          const newBookmark = {
+            parentId: parentId || '1', // '1' is the root "Bookmarks Bar" ID
+            title: bookmark.title || "Untitled",
+            url: bookmark.url || null
+          };
 
-            chrome.bookmarks.create(newBookmark, (createdBookmark) => {
-                if (bookmark.children && bookmark.children.length > 0) {
-                    // Recursively create children bookmarks
-                    createBookmarksHierarchy(bookmark.children, createdBookmark.id).then(resolve);
-                } else {
-                    resolve();
-                }
-            });
+          chrome.bookmarks.create(newBookmark, (createdBookmark) => {
+            if (bookmark.children && bookmark.children.length > 0) {
+              // Recursively create children bookmarks
+              createBookmarksHierarchy(bookmark.children, createdBookmark.id).then(resolve);
+            } else {
+              resolve();
+            }
+          });
         });
-    }));
-}
+      }));
+    }
 
   }
 })
