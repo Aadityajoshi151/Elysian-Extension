@@ -71,7 +71,11 @@ async function sendGETRequest(endpoint) {
     }
 
   });
-  return response.json()
+  if (response.status == 200){
+    return response.json()
+  }
+  else{return false}
+  
 }
 
 async function sendBookmarkToElysian(id, info) {
@@ -147,9 +151,14 @@ chrome.runtime.onMessage.addListener(async function (message) {
     console.log("Removing add listener")
     chrome.bookmarks.onCreated.removeListener(sendBookmarkToElysian);
     response = await sendGETRequest("import_from_elysian")
-    await create_bookmarks(response)
-    bookmarks = await getBrowserBookmarks()
-    sendPostRequest(bookmarks, "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysian")
+    if (response != false){
+      await create_bookmarks(response)
+      bookmarks = await getBrowserBookmarks()
+      sendPostRequest(bookmarks, "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysian")
+    }
+    else{
+      showNotification("Authentication failed", "Please check the API key added in Elysian extension");
+    }
 
     async function create_bookmarks(bookmarksData) {
       // Start creating bookmarks in the Chrome browser
