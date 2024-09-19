@@ -48,6 +48,8 @@ async function sendPostRequest(info, endpoint, response_code, notification_title
         "Content-type": "application/json"
       }
     });
+    console.log(response.status)
+    console.log(response_code)
     if (response.status == response_code) {
       showNotification(notification_title, notification_message);
     }
@@ -164,14 +166,15 @@ chrome.runtime.onMessage.addListener(async function (message) {
     else{
       showNotification("Authentication failed", "Please check the API key added in Elysian extension");
     }
+    console.log("adding add listener back");
+    chrome.bookmarks.onCreated.addListener(sendBookmarkToElysian);
 
     async function create_bookmarks(bookmarksData) {
       // Start creating bookmarks in the Chrome browser
       await createBookmarksHierarchy(bookmarksData, null);
 
       // Reattach the event listener after all bookmarks have been created
-      console.log("adding add listener back");
-      chrome.bookmarks.onCreated.addListener(sendBookmarkToElysian);
+
     }
 
     function createBookmarksHierarchy(bookmarks, parentId) {
