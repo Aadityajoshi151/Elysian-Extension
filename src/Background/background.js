@@ -122,7 +122,12 @@ chrome.bookmarks.onChanged.addListener(async function (id, info) {
     },
     body: JSON.stringify({ "id": id, "title": info.title, "url": info.url })
   });
-  showNotification("Bookmark Updated", "The bookmark is sucessfully updated in Elysian");
+  if (response.status == 200) {
+    showNotification("Bookmark Updated", "The bookmark is sucessfully updated in Elysian");
+  }
+  else if (response.status == 401) {
+    showNotification("Authentication failed", "Please check the API key added in Elysian extension");
+  }
 })
 
 
