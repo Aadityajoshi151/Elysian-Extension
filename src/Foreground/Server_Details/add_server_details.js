@@ -22,3 +22,11 @@ document.getElementById("add_details").addEventListener("click", function(){
       });
 
 })
+
+document.getElementById("toggle_api_key").addEventListener("click", function(){
+  if (api_key_input.type === "password") {
+    api_key_input.type = "text";
+  } else {
+    api_key_input.type = "password";
+  }
+})
