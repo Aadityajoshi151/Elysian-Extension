@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
     "name": "Elysian",
-    "description": "Smart bookmark manager",
-    "version": "1.0",
+    "description": "A self-hosted tool to backup your regularly used bookmarks from the bookmarks toolbar of your browser to your home lab.",
+    "version": "0.9.0",
     "permissions": ["bookmarks","notifications","webRequest","tabs","storage"],
     "action": {
         "default_popup": "src/Foreground/Popup/popup.html"
