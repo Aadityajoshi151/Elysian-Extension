@@ -1,3 +1,5 @@
+import { showNotification } from "./utils/showNotification.js";
+
 function getFromLocalStorage(key) {
   return new Promise((resolve, reject) => {
     chrome.storage.local.get([key], function (result) {
@@ -16,14 +18,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
   }
 });
 
-function showNotification(title, message) {
-  chrome.notifications.create({
-    type: 'basic',
-    iconUrl: chrome.runtime.getURL('assets/Elysian_Logo.png'),
-    title: title,
-    message: message
-  }, function () { });
-}
+
 
 function getBrowserBookmarks() {
   return new Promise((resolve, reject) => {
@@ -150,7 +145,7 @@ chrome.bookmarks.onImportEnded.addListener(async function () {
 
 chrome.runtime.onMessage.addListener(async function (message) {
   if (message.content === "export_to_elysian") {
-    bookmarks = await getBrowserBookmarks()
+    const bookmarks = await getBrowserBookmarks()
     sendPostRequest(bookmarks, "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysian")
 
   }
