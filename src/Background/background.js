@@ -1,4 +1,5 @@
 import { showNotification } from "./utils/showNotification.js";
+import { getBrowserBookmarks } from "./utils/getBrowserBookmarks.js";
 
 function getFromLocalStorage(key) {
   return new Promise((resolve, reject) => {
@@ -11,26 +12,11 @@ function getFromLocalStorage(key) {
   });
 }
 
-
 chrome.runtime.onInstalled.addListener(function (details) {
   if (details.reason === "install") {
     chrome.tabs.create({ url: "src/Foreground/Server_Details/add_server_details.html" });
   }
 });
-
-
-
-function getBrowserBookmarks() {
-  return new Promise((resolve, reject) => {
-    chrome.bookmarks.getTree(function (bookmarkTreeNodes) {
-      if (chrome.runtime.lastError) {
-        return reject(chrome.runtime.lastError);
-      }
-      const bookmarks = bookmarkTreeNodes[0].children[0].children;
-      resolve(bookmarks);
-    });
-  });
-}
 
 async function sendPostRequest(info, endpoint, response_code, notification_title, notification_message) {
   try {
