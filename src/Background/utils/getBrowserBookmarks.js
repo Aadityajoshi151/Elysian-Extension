@@ -1,5 +1,5 @@
 export function getBrowserBookmarks() {
-    return new Promise((resolve, reject) => {
+    return new Promise(function (resolve, reject) {
         chrome.bookmarks.getTree(function (bookmarkTreeNodes) {
             if (chrome.runtime.lastError) {
                 return reject(chrome.runtime.lastError);
