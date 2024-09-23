@@ -1,16 +1,6 @@
 import { showNotification } from "./utils/showNotification.js";
 import { getBrowserBookmarks } from "./utils/getBrowserBookmarks.js";
-
-function getFromLocalStorage(key) {
-  return new Promise((resolve, reject) => {
-    chrome.storage.local.get([key], function (result) {
-      if (chrome.runtime.lastError) {
-        return reject(chrome.runtime.lastError);
-      }
-      resolve(result[key] || null); // Return null if key not found
-    });
-  });
-}
+import { getFromLocalStorage } from "./utils/getFromLocalStorage.js";
 
 chrome.runtime.onInstalled.addListener(function (details) {
   if (details.reason === "install") {
