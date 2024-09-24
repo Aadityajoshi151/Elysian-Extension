@@ -2,32 +2,13 @@ import { showNotification } from "./utils/showNotification.js";
 import { getBrowserBookmarks } from "./utils/getBrowserBookmarks.js";
 import { getFromLocalStorage } from "./utils/getFromLocalStorage.js";
 import { sendPostRequest } from "./requests/sendPostRequest.js";
+import { sendGETRequest } from "./requests/sendGetRequest.js";
 
 chrome.runtime.onInstalled.addListener(function (details) {
   if (details.reason === "install") {
     chrome.tabs.create({ url: "src/Foreground/Server_Details/add_server_details.html" });
   }
 });
-
-
-
-
-async function sendGETRequest(endpoint) {
-  const BASE_URL = await getFromLocalStorage('server_url')
-  const response = await fetch(BASE_URL.concat("/api/" + endpoint), {
-    method: "GET",
-    headers: {
-      "Authorization": await getFromLocalStorage('elysian_api_key'),
-      "Content-type": "application/json"
-    }
-
-  });
-  if (response.status == 200){
-    return response.json()
-  }
-  else{return false}
-  
-}
 
 async function sendBookmarkToElysian(id, info) {
   await sendPostRequest(info, "add_bookmark", 201, info.title + '|' + info.url, "Bookmark added to Elysian")
