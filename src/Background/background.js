@@ -87,10 +87,10 @@ chrome.runtime.onMessage.addListener(async function (message) {
   if (message.content === "import_from_elysian") {
     console.log("Removing add listener")
     chrome.bookmarks.onCreated.removeListener(sendBookmarkToElysian);
-    response = await sendGETRequest("import_from_elysian")
+    const response = await sendGETRequest("import_from_elysian")
     if (response != false){
       await create_bookmarks(response)
-      bookmarks = await getBrowserBookmarks()
+      const bookmarks = await getBrowserBookmarks()
       sendPostRequest(bookmarks, "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysian")
     }
     else{
