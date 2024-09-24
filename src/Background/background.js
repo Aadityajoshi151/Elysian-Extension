@@ -1,7 +1,6 @@
 import { showNotification } from "./utils/showNotification.js";
 import { getBrowserBookmarks } from "./utils/getBrowserBookmarks.js";
-import { getFromLocalStorage } from "./utils/getFromLocalStorage.js";
-import { sendPostRequest } from "./requests/sendPostRequest.js";
+import { sendRequest } from "./requests/sendRequest.js";
 import { sendGETRequest } from "./requests/sendGetRequest.js";
 
 chrome.runtime.onInstalled.addListener(function (details) {
@@ -11,61 +10,22 @@ chrome.runtime.onInstalled.addListener(function (details) {
 });
 
 async function sendBookmarkToElysian(id, info) {
-  await sendPostRequest(info, "add_bookmark", 201, info.title + '|' + info.url, "Bookmark added to Elysian")
-}
-
-async function sendDeleteBookmarkFromElysian(id, info) {
-  await sendDeleteRequest(id, "delete_bookmark")
+  await sendRequest("POST", JSON.stringify(info), "add_bookmark", 201, info.title + '|' + info.url, "Bookmark added to Elysian")
 }
 
 chrome.bookmarks.onCreated.addListener(sendBookmarkToElysian);
 
 chrome.bookmarks.onRemoved.addListener(async function (id, info) {
-  try {
-    const BASE_URL = await getFromLocalStorage('server_url')
-    const response = await fetch(BASE_URL.concat("/api/delete_bookmark"), {
-      method: "DELETE",
-      headers: {
-        "Authorization": await getFromLocalStorage('elysian_api_key'),
-        "Content-type": "application/json"
-      },
-      body: JSON.stringify({ "id": id })
-    });
-    if (response.status == 200) {
-      showNotification("Bookmark Deleted", "The bookmark is sucessfully deleted from Elysian");
-    }
-    else if (response.status == 401) {
-      showNotification("Authentication failed", "Please check the API key added in Elysian extension");
-    }
-  }
-  catch (error) {
-    //TODO change the notification title below
-    showNotification("Error Occurrerd!", error.message);
-  }
+  sendRequest("DELETE", JSON.stringify({ "id": id }), "delete_bookmark", 200, "Bookmark Deleted", "The bookmark is sucessfully deleted from Elysian")
 });
 
 chrome.bookmarks.onChanged.addListener(async function (id, info) {
-  const BASE_URL = await getFromLocalStorage('server_url')
-  const response = await fetch(BASE_URL.concat("/api/update_bookmark"), {
-    method: "PATCH",
-    headers: {
-      "Authorization": await getFromLocalStorage('elysian_api_key'),
-      "Content-type": "application/json"
-    },
-    body: JSON.stringify({ "id": id, "title": info.title, "url": info.url })
-  });
-  if (response.status == 200) {
-    showNotification("Bookmark Updated", "The bookmark is sucessfully updated in Elysian");
-  }
-  else if (response.status == 401) {
-    showNotification("Authentication failed", "Please check the API key added in Elysian extension");
-  }
+  sendRequest("PATCH", JSON.stringify({ "id": id, "title": info.title, "url": info.url }), "update_bookmark", 200, "Bookmark Updated", "The bookmark is sucessfully updated in Elysian")
 })
 
-
 chrome.bookmarks.onMoved.addListener(async function (id, info) {
-  bookmarks = await getBrowserBookmarks()
-  sendPostRequest(bookmarks, "export_to_elysian", 200, "Bookmark Moved", "Sucessfully moved the bookmark in Elysian")
+  const bookmarks = await getBrowserBookmarks()
+  sendRequest("POST", JSON.stringify(bookmarks), "export_to_elysian", 200, "Bookmark Moved", "Sucessfully moved the bookmark in Elysian")
 })
 
 chrome.bookmarks.onImportBegan.addListener(async function () {
@@ -74,29 +34,29 @@ chrome.bookmarks.onImportBegan.addListener(async function () {
 
 chrome.bookmarks.onImportEnded.addListener(async function () {
   chrome.bookmarks.onCreated.addListener(sendBookmarkToElysian);
-  bookmarks = await getBrowserBookmarks()
-  sendPostRequest(bookmarks, "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysian")
+  const bookmarks = await getBrowserBookmarks()
+  sendRequest("POST", JSON.stringify(bookmarks), "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysian")
 })
 
 chrome.runtime.onMessage.addListener(async function (message) {
   if (message.content === "export_to_elysian") {
     const bookmarks = await getBrowserBookmarks()
-    sendPostRequest(bookmarks, "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysian")
+    sendRequest("POST", JSON.stringify(bookmarks), "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysian")
 
   }
   if (message.content === "import_from_elysian") {
-    console.log("Removing add listener")
+    console.debug("Removing add listener")
     chrome.bookmarks.onCreated.removeListener(sendBookmarkToElysian);
     const response = await sendGETRequest("import_from_elysian")
     if (response != false){
       await create_bookmarks(response)
       const bookmarks = await getBrowserBookmarks()
-      sendPostRequest(bookmarks, "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysian")
+      sendRequest("POST", JSON.stringify(bookmarks), "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysian")
     }
     else{
       showNotification("Authentication failed", "Please check the API key added in Elysian extension");
     }
-    console.log("adding add listener back");
+    console.debug("adding add listener back");
     chrome.bookmarks.onCreated.addListener(sendBookmarkToElysian);
 
     async function create_bookmarks(bookmarksData) {
