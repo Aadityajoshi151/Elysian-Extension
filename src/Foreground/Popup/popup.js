@@ -8,9 +8,13 @@ document.getElementById("add_credentials").addEventListener("click", function(){
 })
 
 document.getElementById("github_repo").addEventListener("click", function(){
-    chrome.tabs.create({ url: "https://github.com/Aadityajoshi151?tab=repositories" });
+    chrome.tabs.create({ url: "https://github.com/Aadityajoshi151/Elysian" });
 })
 
 document.getElementById("import_from_server").addEventListener("click", function(){
     chrome.runtime.sendMessage({content: "import_from_elysian"})
 })
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('version').innerText = chrome.runtime.getManifest().version;
+});

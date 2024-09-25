@@ -4,19 +4,33 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="popup_stylesheet.css">
     <title>Elysian</title>
 </head>
 <body>
-        <div class="list-group">
+        <!-- <div class="list-group">
             <a class="list-group-item list-group-item-action active" aria-current="true">Elysian</a>
             <a id="export_to_server" class="list-group-item list-group-item-action"><i class="bi bi-cloud-upload-fill"></i> Export to Elysian server</a>
             <a id="import_from_server" class="list-group-item list-group-item-action"><i class="bi bi-cloud-download-fill"></i> Import from Elysian server</a>
             <a id="add_credentials" class="list-group-item list-group-item-action"><i class="bi bi-pen-fill"></i> Add/Update server information</a>
             <a id="github_repo" class="list-group-item list-group-item-action"><i class="bi bi-github"></i> Github</a>
+        </div> -->
+        <div class="top-container">
+            <img src="../../../assets/icons/icon32.png" alt="Elysian">
+            <h2>ELYSIAN</h2>
+            <label id="version">v0.9.0</label>
         </div>
+        <div class="middle-container">
+            <button type="button" class="btn btn-success text-nowrap" id="export_to_server"><i class="bi bi-cloud-upload-fill"></i> Export to Elysian</button>
+            <button type="button" class="btn btn-success text-nowrap" id="import_from_server"><i class="bi bi-cloud-download-fill"></i> Import from Elysian</button>
+        </div>
+        <button type="button" class="btn btn-success text-nowrap" id="add_credentials"><i class="bi bi-pen-fill"></i> Add/Update Server Information</button>
+        <a id="github_repo" href=""><i class="bi bi-github"></i></a>
+        <!-- <div class="bottom-container">
+            
+        </div> -->
         <script src="popup.js"></script>
     </body>
 

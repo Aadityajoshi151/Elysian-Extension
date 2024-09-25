@@ -1,6 +1,27 @@
-body{
-  width: 150px;
-}
 .list-group-item:hover{
   cursor: pointer;
+}
+.top-container {
+  display: flex;
+  align-items: center;
+}
+.top-container h2{
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  padding-left: 5px;
+  padding-top: 6px;
+  padding-right: 10px;
+}
+.middle-container {
+  display: flex;
+  align-items: center;
+}
+.middle-container button{
+  margin: 5px;
+}
+#add_credentials{
+  margin: 0 auto;
+  display: block;
+}
+#github_repo{
+  margin-left: 5px;
 }
