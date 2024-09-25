@@ -1,6 +1,15 @@
 body{
-  width: 150px;
+  width: 200px;
 }
 .list-group-item:hover{
   cursor: pointer;
+}
+.top-container {
+  display: flex;
+  align-items: center;
+}
+.top-container h2{
+  padding-left: 5px;
+  padding-top: 6px;
+  padding-right: 10px;
 }
