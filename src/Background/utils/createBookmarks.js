@@ -13,6 +13,7 @@ function createBookmarksHierarchy(bookmarks, parentId) {
         url: bookmark.url || null
       };
       chrome.bookmarks.create(newBookmark, (createdBookmark) => {
+        console.log(newBookmark.title+" created")
         if (bookmark.children && bookmark.children.length > 0) {
           // Recursively create children bookmarks
           createBookmarksHierarchy(bookmark.children, createdBookmark.id).then(resolve);

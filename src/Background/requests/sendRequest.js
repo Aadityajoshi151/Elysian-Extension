@@ -13,13 +13,15 @@ export async function sendRequest(method, info, endpoint, expected_response_code
         }
       });
       if (response.status == expected_response_code) {
+        console.log("notification_title")
         showNotification(notification_title, notification_message);
       }
       else if (response.status == 401) {
+        console.error("Authentication failed")
         showNotification("Authentication failed", "Please check the API key added in Elysian extension");
       }
     } catch (error) {
-      //TODO change the notification title below
-      showNotification("Error Occurrerd!", error.message);
+      console.error(error.message)
+      showNotification("Error Occurrerd", error.message);
     }
   }
