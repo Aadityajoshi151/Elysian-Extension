@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Elysian",
-    "description": "A chrome extension to backup your regularly used bookmarks from the bookmarks toolbar of your browser to your home lab.",
+    "description": "A chrome extension to backup your regularly used bookmarks of your browser to your home lab.",
     "version": "0.9.0",
     "author": "aadityajoshi151@gmail.com",
     "permissions": ["bookmarks","notifications","webRequest","tabs","storage"],
