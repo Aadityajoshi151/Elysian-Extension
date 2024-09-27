@@ -4,7 +4,7 @@ A browser extension to backup regularly used bookmarks of your browser to Elysia
 It uses the chrome's [bookmarks event listeners](https://developer.chrome.com/docs/extensions/reference/api/bookmarks#event) to detect when a bookmark is added, updated, changed etc. and performs the same action on server side through REST API calls.
 
 ## Getting Started
-- Click [here]() to see the full setup instructions (Elysian server + Extension)
+- Click [here](https://github.com/Aadityajoshi151/Elysian/wiki/Elysian-wiki) to see the full setup instructions (Elysian server + Extension)
 - Already have Elysian server running? Follow these steps for setting up the extension:
 > [!NOTE]
 > Currently, Elysian is only avaible for Chrome/Brave. Firefox extension is coming soon. Once both extensions are created, they will be eventually made available on their respective browser's marketplace.
