@@ -12,7 +12,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
 });
 
 async function sendBookmarkToElysian(id, info) {
-  await sendRequest("POST", JSON.stringify(info), "add_bookmark", 201, info.title + '|' + info.url, "Bookmark added to Elysian")
+  await sendRequest("POST", JSON.stringify(info), "add_bookmark", 201, info.title, "Bookmark added to Elysian")
 }
 
 chrome.bookmarks.onCreated.addListener(sendBookmarkToElysian);
