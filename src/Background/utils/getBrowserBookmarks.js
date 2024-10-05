@@ -1,8 +1,10 @@
+import "./crossBrowser.js";
+
 export function getBrowserBookmarks() {
     return new Promise(function (resolve, reject) {
-        chrome.bookmarks.getTree(function (bookmarkTreeNodes) {
-            if (chrome.runtime.lastError) {
-                return reject(chrome.runtime.lastError);
+        browser.bookmarks.getTree(function (bookmarkTreeNodes) {
+            if (browser.runtime.lastError) {
+                return reject(browser.runtime.lastError);
             }
             const bookmarks = bookmarkTreeNodes[0].children[0].children;
             resolve(bookmarks);
