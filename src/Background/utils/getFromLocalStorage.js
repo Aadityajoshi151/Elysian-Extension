@@ -1,8 +1,10 @@
+import "./crossBrowser.js";
+
 export function getFromLocalStorage(key) {
     return new Promise(function(resolve, reject) {
-      chrome.storage.local.get([key], function (result) {
-        if (chrome.runtime.lastError) {
-          return reject(chrome.runtime.lastError);
+      browser.storage.local.get([key], function (result) {
+        if (browser.runtime.lastError) {
+          return reject(browser.runtime.lastError);
         }
         if (result[key] === undefined) {
             console.error(key+" not found in local storage")
