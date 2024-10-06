@@ -31,16 +31,6 @@ browser.bookmarks.onMoved.addListener(async function (id, info) {
   sendRequest("POST", JSON.stringify(bookmarks), "export_to_elysian", 200, "Bookmark moved", "The bookmark is sucessfully moved in Elysian")
 })
 
-// browser.bookmarks.onImportBegan.addListener(async function () {
-//   browser.bookmarks.onCreated.removeListener(sendBookmarkToElysian);
-// })
-
-// browser.bookmarks.onImportEnded.addListener(async function () {
-//   browser.bookmarks.onCreated.addListener(sendBookmarkToElysian);
-//   const bookmarks = await getBrowserBookmarks()
-//   sendRequest("POST", JSON.stringify(bookmarks), "export_to_elysian", 200, "Export successful", "Bookmarks from this browser are added in Elysian")
-// })
-
 browser.runtime.onMessage.addListener(async function (message) {
   if (message.content === "export_to_elysian") {
     console.log("Export to Elysian")
