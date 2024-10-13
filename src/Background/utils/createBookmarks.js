@@ -1,3 +1,5 @@
+import "./crossBrowser.js";
+
 export async function create_bookmarks(bookmarksData) {
   // Start creating bookmarks in the Chrome browser
   await createBookmarksHierarchy(bookmarksData, null);
@@ -12,7 +14,7 @@ function createBookmarksHierarchy(bookmarks, parentId) {
         title: bookmark.title || "Untitled",
         url: bookmark.url || null
       };
-      chrome.bookmarks.create(newBookmark, (createdBookmark) => {
+      browser.bookmarks.create(newBookmark, (createdBookmark) => {
         console.log(newBookmark.title+" created")
         if (bookmark.children && bookmark.children.length > 0) {
           // Recursively create children bookmarks
